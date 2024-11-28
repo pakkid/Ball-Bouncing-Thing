@@ -1,0 +1,44 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.controls-frame {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    height: 200px;
+    border: none;
+    z-index: 10;
+}
+
+.controls {
+    background-color: #333;
+    border: 1px solid #fff;
+    padding: 10px;
+    cursor: move;
+    color: #ffffff;
+}
+
+.controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #444;
+    padding: 5px;
+    cursor: move;
+}
+
+.controls-body {
+    display: block;
+}
+
+canvas {
+    border: 1px solid #ffffff;
+}
