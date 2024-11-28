@@ -5,13 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ball Bouncing in a Circle</title>
     <link rel="stylesheet" href="assets/style.css">
+    <script src="https://code.iconify.design/2/2.0.3/iconify.min.js"></script>
 </head>
 <body>
-    <iframe id="controlsFrame" src="controls/controls.html" class="controls-frame"></iframe>
+    <div id="controls" class="controls">
+        <div id="controlsHeader" class="controls-header">
+            <span>Controls</span>
+            <button id="minimizeButton">-</button>
+        </div>
+        <div id="controlsBody" class="controls-body">
+            <label>Gravity: <input type="range" id="gravity" min="0" max="1" step="0.01" value="0.1"></label>
+            <label>Speed: <input type="range" id="speed" min="0" max="10" step="0.1" value="2"></label>
+            <label>Number of Balls: <input type="range" id="numBalls" min="1" max="10" step="1" value="1"></label>
+            <label>Ball Color: <input type="color" id="ballColor" value="#007bff"></label>
+            <label>Circle Size: <input type="range" id="circleSize" min="50" max="500" step="10" value="200"></label>
+            <label>Ball Size: <input type="range" id="ballSize" min="5" max="50" step="1" value="20"></label>
+            <label>Image URL: <input type="text" id="imageUrl" placeholder="Enter image URL"></label>
+            <label>Image Size: <input type="range" id="imageSize" min="10" max="500" step="10" value="100"></label>
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="imageFile" accept="image/*">
+                <span>Click to select or drag and drop an image</span>
+            </div>
+            <button id="pauseButton"><span class="iconify" data-icon="mdi:pause"></span></button>
+            <button id="resetButton">Reset</button>
+        </div>
+    </div>
     <canvas id="bouncingBallCanvas"></canvas>
-    <script src="assets/js/canvas.js"></script>
-    <script src="assets/js/ball.js"></script>
-    <script src="assets/js/circle.js"></script>
-    <script src="assets/js/animation.js"></script>
+    <script src="assets/script.js"></script>
 </body>
 </html>
