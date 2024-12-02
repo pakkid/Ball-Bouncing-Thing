@@ -29,21 +29,39 @@ let isPaused = false;
 let image = new Image();
 let imageSize = parseInt(controls.imageSize.value);
 
+const MIN_SPEED = 2; // Minimum speed for the balls
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
 function createBalls() {
     balls = [];
     for (let i = 0; i < parseInt(controls.numBalls.value); i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * (circle.radius - parseInt(controls.ballSize.value));
+        const x = circle.x + distance * Math.cos(angle);
+        const y = circle.y + distance * Math.sin(angle);
         balls.push({
-            x: circle.x,
-            y: circle.y - circle.radius + parseInt(controls.ballSize.value),
+            x: x,
+            y: y,
             radius: parseInt(controls.ballSize.value),
             dx: parseFloat(controls.speed.value),
             dy: 0,
             gravity: parseFloat(controls.gravity.value),
             friction: 0.99,
-            color: controls.ballColor.value,
+            color: getRandomColor(),
             isDragging: false,
             lastMouseX: 0,
-            lastMouseY: 0
+            lastMouseY: 0,
+            offsetX: 0,
+            offsetY: 0,
+            lastTime: 0
         });
     }
 }
@@ -73,6 +91,14 @@ function updateBall(ball) {
         ball.dy += ball.gravity;
         ball.x += ball.dx;
         ball.y += ball.dy;
+
+        // Ensure the ball is always moving at a minimum speed
+        const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+        if (speed < MIN_SPEED) {
+            const angle = Math.atan2(ball.dy, ball.dx);
+            ball.dx = MIN_SPEED * Math.cos(angle);
+            ball.dy = MIN_SPEED * Math.sin(angle);
+        }
     }
 
     const distX = ball.x - circle.x;
@@ -96,6 +122,7 @@ function updateBall(ball) {
 
         ball.dx *= ball.friction;
         ball.dy *= ball.friction;
+
     }
 }
 
@@ -118,52 +145,80 @@ canvas.addEventListener('mousedown', (e) => {
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
+    let nearestBall = null;
+    let minDistance = Infinity;
+
     balls.forEach(ball => {
-        const distX = mouseX - circle.x;
-        const distY = mouseY - circle.y;
+        const distX = mouseX - ball.x;
+        const distY = mouseY - ball.y;
         const distance = Math.sqrt(distX * distX + distY * distY);
 
-        if (distance < circle.radius) {
-            ball.isDragging = true;
-            ball.dx = 0;
-            ball.dy = 0;
-            ball.lastMouseX = mouseX;
-            ball.lastMouseY = mouseY;
+        if (distance < minDistance) {
+            nearestBall = ball;
+            minDistance = distance;
         }
     });
-});
 
-canvas.addEventListener('mousemove', (e) => {
-    if (balls.some(ball => ball.isDragging)) {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        balls.forEach(ball => {
-            if (ball.isDragging) {
-                const distX = mouseX - circle.x;
-                const distY = mouseY - circle.y;
-                const distance = Math.sqrt(distX * distX + distY * distY);
-
-                if (distance + ball.radius <= circle.radius) {
-                    ball.x = mouseX;
-                    ball.y = mouseY;
-                }
-            }
-        });
+    if (nearestBall) {
+        nearestBall.isDragging = true;
+        nearestBall.dx = 0;
+        nearestBall.dy = 0;
+        nearestBall.lastMouseX = mouseX;
+        nearestBall.lastMouseY = mouseY;
+        nearestBall.offsetX = mouseX - nearestBall.x;
+        nearestBall.offsetY = mouseY - nearestBall.y;
+        nearestBall.lastTime = Date.now();
+        canvas.style.cursor = 'none';
     }
 });
 
-canvas.addEventListener('mouseup', (e) => {
+canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
     balls.forEach(ball => {
         if (ball.isDragging) {
-            ball.dx = (mouseX - ball.lastMouseX) * 0.1;
-            ball.dy = (mouseY - ball.lastMouseY) * 0.1;
+            const newX = mouseX - ball.offsetX;
+            const newY = mouseY - ball.offsetY;
+            const distX = newX - circle.x;
+            const distY = newY - circle.y;
+            const distance = Math.sqrt(distX * distX + distY * distY);
+
+            if (distance + ball.radius <= circle.radius) {
+                ball.x = newX;
+                ball.y = newY;
+            }
+
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - ball.lastTime) / 1000; // Convert to seconds
+            ball.dx = (mouseX - ball.lastMouseX) / deltaTime * 0.2;
+            ball.dy = (mouseY - ball.lastMouseY) / deltaTime * 0.2;
+            ball.lastMouseX = mouseX;
+            ball.lastMouseY = mouseY;
+            ball.lastTime = currentTime;
+        }
+    });
+});
+
+canvas.addEventListener('mouseup', (e) => {
+    balls.forEach(ball => {
+        if (ball.isDragging) {
             ball.isDragging = false;
+            canvas.style.cursor = 'default';
+
+            // Clamp the velocity to prevent it from going too fast
+            const maxVelocity = 10;
+            ball.dx = Math.max(Math.min(ball.dx, maxVelocity), -maxVelocity);
+            ball.dy = Math.max(Math.min(ball.dy, maxVelocity), -maxVelocity);
+
+            // Ensure the ball is always moving at a minimum speed
+            const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+            if (speed < MIN_SPEED) {
+                const angle = Math.atan2(ball.dy, ball.dx);
+                ball.dx = MIN_SPEED * Math.cos(angle);
+                ball.dy = MIN_SPEED * Math.sin(angle);
+            }
         }
     });
 });
@@ -172,6 +227,7 @@ canvas.addEventListener('mouseleave', () => {
     balls.forEach(ball => {
         if (ball.isDragging) {
             ball.isDragging = false;
+            canvas.style.cursor = 'default';
         }
     });
 });
