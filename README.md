@@ -10,6 +10,11 @@ This project simulates balls bouncing within a circular boundary. Users can inte
 - Upload images to be displayed on the balls.
 - Pause and reset the simulation.
 
+## Screenshot
+
+![Screenshot](screenshot.png)
+
+
 ## Installation
 
 1. Clone the repository:
