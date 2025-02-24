@@ -14,18 +14,6 @@ This project simulates balls bouncing within a circular boundary. Users can inte
 
 ![Screenshot](screenshot.png)
 
-
-## Installation
-
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/Ball-Bouncing-Thing.git
-    ```
-2. Navigate to the project directory:
-    ```sh
-    cd Ball-Bouncing-Thing
-    ```
-
 ## Usage
 
 1. Open [`index.html`](index.html) in your web browser.
