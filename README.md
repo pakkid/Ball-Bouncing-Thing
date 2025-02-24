@@ -30,17 +30,6 @@ This project simulates balls bouncing within a circular boundary. Users can inte
     - **Pause**: Pause or resume the simulation.
     - **Reset**: Reset the simulation to its initial state.
 
-## File Structure
-
-.gitattributes assets/ script.js style.css index.html LICENSE README.md
-
-- [`index.html`](index.html): The main HTML file that contains the structure of the web page.
-- [`assets/script.js`](assets/script.js): The JavaScript file that contains the logic for the simulation.
-- [`assets/style.css`](assets/style.css): The CSS file that contains the styles for the web page.
-- [`.gitattributes`](.gitattributes): Git configuration file.
-- [`LICENSE`](LICENSE): The license file for the project.
-- [`README.md`](README.md): This readme file.
-
 ## Live Demo
 
 You can view a live demo of the project hosted on GitHub Pages: [Ball Bouncing Thing](https://pakkid.github.io/Ball-Bouncing-Thing/)
